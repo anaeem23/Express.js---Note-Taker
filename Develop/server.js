@@ -2,9 +2,10 @@ const express = require("express");
 const path = require("path");
 const fs = require("fs");
 const notes = require("./db/db.json");
-const uuid = require('uuid')
+const uuid = require('uniqid');
+const { json } = require("express");
 
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
 
 const app = express();
 
@@ -21,13 +22,15 @@ app.get("/api/notes", (req, res) => {
 });
 
 app.post("/api/notes", (req, res) => {
-
+    notes[0].id = uuid()
     req.body.id = uuid();
+    console.log(uuid())
 
     let noteBody = JSON.stringify(req.body);
-  console.log(noteBody);
+    console.log(noteBody);
+    notes.push(req.body)
 
-  fs.writeFile('./db/db.json',noteBody, (err) =>
+  fs.writeFile('./db/db.json',JSON.stringify(notes), (err) =>
     err
       ? console.error(err)
       : console.log(
@@ -35,7 +38,7 @@ app.post("/api/notes", (req, res) => {
         )
   );
 
-  res.json(req.body)
+  res.json(notes)
 });
 
 // HTML ROUTES
